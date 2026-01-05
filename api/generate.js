@@ -12,17 +12,9 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  if (!GEMINI_API_KEY) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!GEMINI_API_KEY) return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
 
   const { userPhoto, style } = req.body;
   if (!userPhoto || !style || !STYLE_PROMPTS[style]) {
@@ -37,31 +29,46 @@ Requirements:
 - Subject centered, facing forward
 - Plain white background - NO case, NO decorations
 - Square composition, subject fills 70% of frame
-Output only the sculpture on white background.`;
+Generate an image of the sculpture.`;
 
   try {
+    // Try Gemini 2.0 Flash stable version
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent',
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': GEMINI_API_KEY },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [
-            { text: prompt },
-            { inline_data: { mime_type: 'image/jpeg', data: userPhoto.replace(/^data:image\/\w+;base64,/, '') }}
-          ]}],
-          generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+          contents: [{ 
+            parts: [
+              { text: prompt },
+              { inlineData: { mimeType: 'image/jpeg', data: userPhoto.replace(/^data:image\/\w+;base64,/, '') }}
+            ]
+          }],
+          generationConfig: { 
+            responseModalities: ['IMAGE', 'TEXT']
+          }
         })
       }
     );
 
     const data = await response.json();
+
+    if (data.error) {
+      return res.status(500).json({ error: data.error.message, code: data.error.code });
+    }
+
+    // Look for image in response
     for (const part of data.candidates?.[0]?.content?.parts || []) {
       if (part.inlineData) {
-        return res.json({ success: true, image: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` });
+        return res.json({ 
+          success: true, 
+          image: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` 
+        });
       }
     }
-    return res.status(500).json({ error: 'No image generated', details: data });
+    
+    return res.status(500).json({ error: 'No image in response', data });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
