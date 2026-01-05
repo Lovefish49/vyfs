@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Admin</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+  .sidebar {
+      width: 320px;
+      flex-shrink: 0;
+    }
+    .main-content {
+      flex: 1;
+      min-width: 0;
+    }
+    h1 { color: #333; margin: 0; }
+    h2 { color: #555; margin-top: 30px; margin-bottom: 15px; }
+    h3 { color: #666; margin-top: 0; margin-bottom: 12px; }
+    .section { margin-bottom: 25px; }
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 12px;
+      font-size: 14px;
+      font-family: monospace;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+    button:disabled { background: #ccc; cursor: not-allowed; }
+    button.restore-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      background: #6c757d;
+    }
+    button.restore-btn:hover { background: #5a6268; }
+    button.delete-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      background: #dc3545;
+      margin-left: 6px;
+    }
+    button.delete-btn:hover { background: #c82333; }
+    button.store-btn {
+      background: #28a745;
+      padding: 8px 16px;
+    }
+    button.store-btn:hover { background: #218838; }
+    select {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      min-width: 200px;
+    }
+    .static-context {
+      background: #e9ecef;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 16px;
+      margin: 20px 0;
+    }
+    .static-context h3 {
+      margin-top: 0;
+      color: #666;
+    }
+    .static-context pre {
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      margin: 0;
+      color: #555;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #ddd;
+      margin: 25px 0;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #ddd;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    #version-description-input {
+      width: 300px;
+    }
+    .version-panel {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      position: sticky;
+      top: 20px;
+    }
+    .version-list {
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+    }
+    .version-item {
+      padding: 12px;
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: #f8f9fa;
+    }
+    .version-item:hover {
+      background: #e9ecef;
+    }
+    .version-description {
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+      word-break: break-word;
+    }
+    .version-meta {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .version-model {
+      font-size: 11px;
+      color: #888;
+      background: #e9ecef;
+      padding: 2px 6px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .empty-state {
+      color: #999;
+      text-align: center;
+      padding: 30px 15px;
+      font-style: italic;
+    }
+    .save-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    /* Right Sidebar - Prompt Preview */
+    .right-sidebar {
+      width: 300px;
+      flex-shrink: 0;
+    }
+    .prompt-toggle-container {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+    .prompt-toggle-container .prompt-toggle-btn {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .toggle-hint {
+      margin: 10px 0 0 0;
+      font-size: 12px;
+      color: #888;
+    }
+    .prompt-panel {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      position: sticky;
+      top: 20px;
+    }
+    .prompt-panel h3 {
+      margin-top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .prompt-panel .close-btn {
+      background: red;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+
+    #refresh-prompt-btn {
+      background-color: green;
+    }
+    .prompt-content {
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    button.prompt-toggle-btn {
+      background: #6f42c1;
+    }
+    button.prompt-toggle-btn:hover {
+      background: #5a32a3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Left Sidebar: Version History -->
+    <div class="sidebar">
+      <div class="version-panel">
+        <h3>Version History</h3>
+        <div id="version-list" class="version-list">
+          <p class="empty-state">Loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content: Prompt Builder -->
+    <div class="main-content">
+      <div class="header">
+        <h1>Prompt Builder</h1>
+        <div class="header-actions">
+          <button class="store-btn" id="store-version-btn">Save this version</button>
+          <input type="text" id="version-description-input" placeholder="Version description...">
+        </div>
+      </div>
+
+      <div class="section">
+        <div style="display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+          <button id="save-llm-model">Save Model</button>
+          <div>
+            <label for="llm-provider" style="display: block; margin-bottom: 5px; font-weight: 500;">Provider:</label>
+            <select id="llm-provider"></select>
+          </div>
+          <div>
+            <label for="llm-model" style="display: block; margin-bottom: 5px; font-weight: 500;">Model:</label>
+            <select id="llm-model"></select>
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-weight: 500;">1M price:</label>
+            <span id="model-price" style="display: inline-block; padding: 10px; background: #e9ecef; border-radius: 4px; min-width: 80px;">-</span>
+          </div>
+          
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="section">
+        <h2>Part 1: AI Persona</h2>
+        <textarea id="system-prompt" placeholder="Loading..."></textarea>
+        <br>
+        <button id="save-system-prompt">Save Persona</button>
+      </div>
+
+      <hr>
+      <div class="static-context">
+        <h3>Part 2: Conversation Context (Get from conversation)</h3>
+        <!-- <p>This is the conversation history:</p>
+        <pre>[Conversation got from Matrix]</pre>
+        <p>Message to reply to:</p>
+        <pre>[the last message sent by counter party, also got from Matrix]</pre> -->
+      </div>
+      <hr>
+
+      <div class="section">
+        <h2>Part 3: Response Criteria</h2>
+        <textarea id="response-criteria" placeholder="Loading..."></textarea>
+        <br>
+        <button id="save-response-criteria">Save Response Criteria</button>
+      </div>
+    </div>
+
+    <!-- Right Sidebar: Prompt Preview -->
+    <div class="right-sidebar" id="right-sidebar">
+      <!-- Toggle Button (shown when LOG_PROMPT is off) -->
+      <div class="prompt-toggle-container" id="prompt-toggle-container">
+        <button class="prompt-toggle-btn" id="show-prompt-btn">SHOW PROMPT</button>
+        <p class="toggle-hint">Click to enable prompt logging</p>
+      </div>
+
+      <!-- Preview Panel (shown when LOG_PROMPT is on) -->
+      <div class="prompt-panel" id="prompt-panel" style="display: none;">
+        <h3>
+          <span>Full Prompt</span>
+          <div>
+            <button class="restore-btn" id="refresh-prompt-btn">Refresh</button>
+            <button class="close-btn" id="close-prompt-btn">Close</button>
+          </div>
+        </h3>
+        <div class="prompt-content" id="prompt-content">
+          Generate a response and click refresh to see full prompt
+        </div>
+
+        <h4 style="margin-top: 15px; margin-bottom: 8px; color: #666;">Model Analysis</h4>
+        <div class="prompt-content" id="analysis-content" style="background: #2d2d2d; max-height: 200px;">
+          Analysis will appear here after generating a response
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const llmProviderEl = document.getElementById('llm-provider');
+    const llmModelEl = document.getElementById('llm-model');
+    const modelPriceEl = document.getElementById('model-price');
+    const saveLlmModelBtn = document.getElementById('save-llm-model');
+    const systemPromptEl = document.getElementById('system-prompt');
+    const saveSystemPromptBtn = document.getElementById('save-system-prompt');
+    const responseCriteriaEl = document.getElementById('response-criteria');
+    const saveResponseCriteriaBtn = document.getElementById('save-response-criteria');
+    const versionDescriptionInput = document.getElementById('version-description-input');
+    const storeVersionBtn = document.getElementById('store-version-btn');
+    const versionListEl = document.getElementById('version-list');
+    const showPromptBtn = document.getElementById('show-prompt-btn');
+    const closePromptBtn = document.getElementById('close-prompt-btn');
+    const refreshPromptBtn = document.getElementById('refresh-prompt-btn');
+    const promptToggleContainer = document.getElementById('prompt-toggle-container');
+    const promptPanel = document.getElementById('prompt-panel');
+    const promptContentEl = document.getElementById('prompt-content');
+    const analysisContentEl = document.getElementById('analysis-content');
+
+    // LOG_PROMPT flag - synced with KV
+    let LOG_PROMPT = false;
+
+    // ============ Models Data ============
+
+    let providersData = [];
+
+    async function loadModels() {
+      try {
+        const res = await fetch('/api/models');
+        providersData = await res.json();
+        populateProviders();
+      } catch (err) {
+        console.error('Failed to load models:', err);
+      }
+    }
+
+    function populateProviders() {
+      llmProviderEl.innerHTML = '';
+      providersData.forEach(provider => {
+        const option = document.createElement('option');
+        option.value = provider.id;
+        option.textContent = provider.name;
+        llmProviderEl.appendChild(option);
+      });
+    }
+
+    function populateModelsForProvider(providerId) {
+      const provider = providersData.find(p => p.id === providerId);
+      llmModelEl.innerHTML = '';
+      if (provider) {
+        provider.models.forEach(model => {
+          const option = document.createElement('option');
+          option.value = model.id;
+          option.textContent = model.id;
+          llmModelEl.appendChild(option);
+        });
+      }
+      updatePriceDisplay();
+    }
+
+    function updatePriceDisplay() {
+      const provider = providersData.find(p => p.id === llmProviderEl.value);
+      const model = provider?.models.find(m => m.id === llmModelEl.value);
+      if (model?.input_price) {
+        modelPriceEl.textContent = `$${model.input_price}`;
+      } else {
+        modelPriceEl.textContent = '-';
+      }
+    }
+
+    // ============ Load Individual Configs ============
+
+    async function loadLlmModel() {
+      try {
+        const res = await fetch('/api/llm-model');
+        const data = await res.json();
+        llmModelEl.value = data.modelName || 'gpt-4o';
+        updatePriceDisplay();
+      } catch (err) {
+        console.error('Failed to load LLM model:', err);
+      }
+    }
+
+    async function loadLlmProvider() {
+      try {
+        const res = await fetch('/api/llm-provider');
+        const data = await res.json();
+        llmProviderEl.value = data.provider || 'openai';
+        populateModelsForProvider(llmProviderEl.value);
+      } catch (err) {
+        console.error('Failed to load LLM provider:', err);
+      }
+    }
+
+    function onProviderChange() {
+      populateModelsForProvider(llmProviderEl.value);
+    }
+
+    async function loadSystemPrompt() {
+      try {
+        const res = await fetch('/api/system-prompt');
+        const data = await res.json();
+        systemPromptEl.value = data.prompt || '';
+      } catch (err) {
+        console.error('Failed to load system prompt:', err);
+        systemPromptEl.placeholder = 'Failed to load prompt';
+      }
+    }
+
+    async function loadResponseCriteria() {
+      try {
+        const res = await fetch('/api/response-criteria');
+        const data = await res.json();
+        responseCriteriaEl.value = data.prompt || '';
+      } catch (err) {
+        console.error('Failed to load response criteria:', err);
+        responseCriteriaEl.placeholder = 'Failed to load response criteria';
+      }
+    }
+
+    // ============ Save Individual Configs ============
+
+    async function saveLlmModel() {
+      saveLlmModelBtn.disabled = true;
+      saveLlmModelBtn.textContent = 'Saving...';
+      try {
+        const [modelRes, providerRes] = await Promise.all([
+          fetch('/api/llm-model', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ modelName: llmModelEl.value })
+          }),
+          fetch('/api/llm-provider', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ provider: llmProviderEl.value })
+          })
+        ]);
+        if (modelRes.ok && providerRes.ok) {
+          alert('Provider & Model saved!');
+        } else {
+          alert('Error saving provider or model');
+        }
+      } catch (err) {
+        console.error('Failed to save LLM model:', err);
+        alert('Failed to save LLM model');
+      } finally {
+        saveLlmModelBtn.disabled = false;
+        saveLlmModelBtn.textContent = 'Save Provider & Model';
+      }
+    }
+
+    async function saveSystemPrompt() {
+      saveSystemPromptBtn.disabled = true;
+      saveSystemPromptBtn.textContent = 'Saving...';
+      try {
+        const res = await fetch('/api/system-prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: systemPromptEl.value })
+        });
+        if (res.ok) {
+          alert('Persona saved!');
+        } else {
+          const data = await res.json();
+          alert('Error: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Failed to save system prompt:', err);
+        alert('Failed to save system prompt');
+      } finally {
+        saveSystemPromptBtn.disabled = false;
+        saveSystemPromptBtn.textContent = 'Save Persona';
+      }
+    }
+
+    async function saveResponseCriteria() {
+      saveResponseCriteriaBtn.disabled = true;
+      saveResponseCriteriaBtn.textContent = 'Saving...';
+      try {
+        const res = await fetch('/api/response-criteria', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: responseCriteriaEl.value })
+        });
+        if (res.ok) {
+          alert('Response Criteria saved!');
+        } else {
+          const data = await res.json();
+          alert('Error: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Failed to save response criteria:', err);
+        alert('Failed to save response criteria');
+      } finally {
+        saveResponseCriteriaBtn.disabled = false;
+        saveResponseCriteriaBtn.textContent = 'Save Response Criteria';
+      }
+    }
+
+    // ============ Version Management ============
+
+    async function storeVersion() {
+      storeVersionBtn.disabled = true;
+      storeVersionBtn.textContent = 'Storing...';
+
+      try {
+        const configData = {
+          SYSTEM_PROMPT: systemPromptEl.value,
+          RESPONSE_CRITERIA: responseCriteriaEl.value,
+          LLM_MODEL_NAME: llmModelEl.value,
+          LLM_PROVIDER: llmProviderEl.value
+        };
+
+        const res = await fetch('/api/versions/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            description: versionDescriptionInput.value || 'No description',
+            configData
+          })
+        });
+
+        if (res.ok) {
+          alert('Version stored!');
+          versionDescriptionInput.value = '';
+          loadVersionHistory();
+        } else {
+          const data = await res.json();
+          alert('Error: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Failed to store version:', err);
+        alert('Failed to store version');
+      } finally {
+        storeVersionBtn.disabled = false;
+        storeVersionBtn.textContent = 'Save this version';
+      }
+    }
+
+    async function loadVersionHistory() {
+      try {
+        const res = await fetch('/api/versions/history');
+        const versions = await res.json();
+
+        if (!versions || versions.length === 0) {
+          versionListEl.innerHTML = '<p class="empty-state">No versions saved yet.<br>Click "Save this version" to create a snapshot.</p>';
+          return;
+        }
+
+        // Store version data for lookup
+        window.versionDataMap = {};
+
+        let html = '';
+        versions.forEach(version => {
+          const date = new Date(version.timestamp).toLocaleString();
+          const description = version.description || '(No description)';
+          const model = version.configData?.LLM_MODEL_NAME || 'N/A';
+
+          // Store config data by ID for safe retrieval
+          window.versionDataMap[version.id] = version.configData;
+
+          html += `
+            <div class="version-item">
+              <div class="version-description">${escapeHtml(description)}</div>
+              <div class="version-meta">${date}</div>
+              <div class="version-model">Model: ${escapeHtml(model)}</div>
+              <button class="restore-btn" onclick="restoreVersionById('${version.id}')">Restore</button>
+              <button class="delete-btn" onclick="deleteVersionItem('${version.id}')">Delete</button>
+            </div>
+          `;
+        });
+
+        versionListEl.innerHTML = html;
+      } catch (err) {
+        console.error('Failed to load version history:', err);
+        versionListEl.innerHTML = '<p class="empty-state">Failed to load versions.</p>';
+      }
+    }
+
+    function restoreVersionById(versionId) {
+      const configData = window.versionDataMap[versionId];
+      if (!configData) {
+        alert('Version data not found. Please refresh the page.');
+        return;
+      }
+      restoreVersion(configData);
+    }
+
+    async function restoreVersion(configData) {
+      if (!confirm('Restore this version? This will apply the configuration immediately.')) {
+        return;
+      }
+
+      // Update form fields
+      llmProviderEl.value = configData.LLM_PROVIDER || 'openai';
+      llmModelEl.value = configData.LLM_MODEL_NAME || 'gpt-4o';
+      systemPromptEl.value = configData.SYSTEM_PROMPT || '';
+      responseCriteriaEl.value = configData.RESPONSE_CRITERIA || '';
+
+      // Save all fields to KV
+      try {
+        const results = await Promise.all([
+          fetch('/api/llm-provider', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ provider: configData.LLM_PROVIDER || 'openai' })
+          }),
+          fetch('/api/llm-model', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ modelName: configData.LLM_MODEL_NAME || 'gpt-4o' })
+          }),
+          fetch('/api/system-prompt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: configData.SYSTEM_PROMPT || '' })
+          }),
+          fetch('/api/response-criteria', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: configData.RESPONSE_CRITERIA || '' })
+          })
+        ]);
+
+        const allOk = results.every(r => r.ok);
+        if (allOk) {
+          alert('Version restored and applied!');
+        } else {
+          alert('Version restored but some saves failed. Check console for details.');
+        }
+      } catch (err) {
+        console.error('Failed to save restored version:', err);
+        alert('Version restored to form but failed to save. Try clicking Save buttons manually.');
+      }
+    }
+
+    async function deleteVersionItem(versionId) {
+      if (!confirm('Delete this version? This cannot be undone.')) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/versions/${versionId}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          loadVersionHistory();
+        } else {
+          const data = await res.json();
+          alert('Error: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Failed to delete version:', err);
+        alert('Failed to delete version');
+      }
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ============ Prompt Preview ============
+
+    async function loadLogPromptStatus() {
+      try {
+        const res = await fetch('/api/log-prompt');
+        const data = await res.json();
+        LOG_PROMPT = data.enabled;
+        updatePromptUI();
+      } catch (err) {
+        console.error('Failed to load LOG_PROMPT status:', err);
+      }
+    }
+
+    async function enableLogPrompt() {
+      showPromptBtn.disabled = true;
+      showPromptBtn.textContent = 'Enabling...';
+
+      try {
+        const res = await fetch('/api/log-prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: true })
+        });
+
+        if (res.ok) {
+          LOG_PROMPT = true;
+          updatePromptUI();
+          loadFullPrompt();
+        }
+      } catch (err) {
+        console.error('Failed to enable LOG_PROMPT:', err);
+      } finally {
+        showPromptBtn.disabled = false;
+        showPromptBtn.textContent = 'SHOW PROMPT';
+      }
+    }
+
+    async function disableLogPrompt() {
+      closePromptBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/log-prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: false })
+        });
+
+        if (res.ok) {
+          LOG_PROMPT = false;
+          updatePromptUI();
+        }
+      } catch (err) {
+        console.error('Failed to disable LOG_PROMPT:', err);
+      } finally {
+        closePromptBtn.disabled = false;
+      }
+    }
+
+    function updatePromptUI() {
+      if (LOG_PROMPT) {
+        promptToggleContainer.style.display = 'none';
+        promptPanel.style.display = 'block';
+      } else {
+        promptToggleContainer.style.display = 'block';
+        promptPanel.style.display = 'none';
+      }
+    }
+
+    async function loadFullPrompt() {
+      promptContentEl.textContent = 'Loading...';
+      analysisContentEl.textContent = 'Loading...';
+
+      // Fetch prompt and analysis in parallel
+      try {
+        const [promptRes, analysisRes] = await Promise.all([
+          fetch('/api/full-prompt-preview'),
+          fetch('/api/current-analysis')
+        ]);
+
+        const promptData = await promptRes.json();
+        const analysisData = await analysisRes.json();
+
+        if (promptRes.ok) {
+          promptContentEl.textContent = promptData.prompt || promptData.message || 'No prompt stored yet.';
+        } else {
+          promptContentEl.textContent = 'Error: ' + (promptData.error || 'Unknown error');
+        }
+
+        if (analysisRes.ok) {
+          analysisContentEl.textContent = analysisData.analysis || analysisData.message || 'No analysis stored yet.';
+        } else {
+          analysisContentEl.textContent = 'Error: ' + (analysisData.error || 'Unknown error');
+        }
+      } catch (err) {
+        console.error('Failed to load prompt/analysis:', err);
+        promptContentEl.textContent = 'Failed to load prompt preview';
+        analysisContentEl.textContent = 'Failed to load analysis';
+      }
+    }
+
+    // ============ Event Listeners ============
+
+    saveLlmModelBtn.addEventListener('click', saveLlmModel);
+    llmProviderEl.addEventListener('change', onProviderChange);
+    llmModelEl.addEventListener('change', updatePriceDisplay);
+    saveSystemPromptBtn.addEventListener('click', saveSystemPrompt);
+    saveResponseCriteriaBtn.addEventListener('click', saveResponseCriteria);
+    storeVersionBtn.addEventListener('click', storeVersion);
+    showPromptBtn.addEventListener('click', enableLogPrompt);
+    closePromptBtn.addEventListener('click', disableLogPrompt);
+    refreshPromptBtn.addEventListener('click', loadFullPrompt);
+
+    // ============ Initial Load ============
+
+    // Load models first, then provider and model settings
+    loadModels().then(() => {
+      loadLlmProvider().then(() => loadLlmModel());
+    });
+    loadSystemPrompt();
+    loadResponseCriteria();
+    loadVersionHistory();
+    loadLogPromptStatus();
+  </script>
+</body>
+</html>
