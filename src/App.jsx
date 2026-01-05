@@ -118,7 +118,7 @@ const CaseOverlay = ({ caseType, children }) => {
       </svg>
     ),
   };
-  return <div className="relative">{children}{cases[caseType]}</div>;
+  return <div className="relative w-full h-full">{children}{cases[caseType]}</div>;
 };
 
 const AddonOverlays = ({ addons, engravingDate }) => (
