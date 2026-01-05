@@ -8,6 +8,7 @@ const STYLE_PROMPTS = {
 };
 
 export default async function handler(req, res) {
+  // 1. CORS & Method Validation
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -21,45 +22,59 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing userPhoto or invalid style' });
   }
 
-  const prompt = `Transform this photo into a preserved hydrangea flower sculpture.
-Style: ${STYLE_PROMPTS[style]}
-Requirements:
-- Soft pastel pink, cream, and lavender flower petals form the subject's silhouette
-- Maintain recognizable features of the subject
-- Subject centered, facing forward
-- Plain white background - NO case, NO decorations
-- Square composition, subject fills 70% of frame
-Generate an image of the sculpture.`;
+  // 2. Prompt Construction
+  const prompt = `Transform this photo into a preserved hydrangea flower sculpture in ${STYLE_PROMPTS[style]}. Soft pastel pink, cream, and lavender flower petals form the subject's silhouette. Maintain recognizable features. Plain white background, square composition.`;
 
   try {
-    // Try Gemini 2.5 Flash 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ 
+          contents: [{
             parts: [
               { text: prompt },
-              { inlineData: { mimeType: 'image/jpeg', data: userPhoto.replace(/^data:image\/\w+;base64,/, '') }}
+              { inlineData: { 
+                  mimeType: 'image/jpeg', 
+                  data: userPhoto.split(',')[1] || userPhoto // Cleaner base64 extraction
+              }}
             ]
           }],
-          generationConfig: { 
-            responseModalities: ['IMAGE', 'TEXT']
-          }
+          // 3. Add Generation Config and Safety Settings
+          generationConfig: {
+            temperature: 1.0,
+            topP: 0.95,
+          },
+          safetySettings: [
+            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+          ]
         })
       }
     );
 
     const data = await response.json();
 
+    // 4. Enhanced Error Handling
     if (data.error) {
-      return res.status(500).json({ error: data.error.message, code: data.error.code });
+      console.error("Gemini API Error:", data.error);
+      return res.status(data.code || 500).json({ 
+        error: data.error.message, 
+        details: "Check if billing is linked to your Google Cloud project to enable the free tier." 
+      });
     }
 
-    // Look for image in response
-    for (const part of data.candidates?.[0]?.content?.parts || []) {
+    // Check for blocked content
+    if (data.candidates?.[0]?.finishReason === "SAFETY") {
+      return res.status(400).json({ error: "Image generation blocked by safety filters. Try a different photo." });
+    }
+
+    // 5. Extract Image Data
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    for (const part of parts) {
       if (part.inlineData) {
         return res.json({ 
           success: true, 
@@ -68,7 +83,7 @@ Generate an image of the sculpture.`;
       }
     }
     
-    return res.status(500).json({ error: 'No image in response', data });
+    return res.status(500).json({ error: 'Model did not return an image. It may have responded with text instead.', data });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
