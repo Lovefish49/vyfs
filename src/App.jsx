@@ -810,9 +810,13 @@ export default function App() {
   const handleReset = () => { setOrder(initialOrder); setCompletedOrder(null); setGeneratedImages({}); setStep(1); };
   if (step === 6 && completedOrder) return <Confirmation order={completedOrder} onReset={handleReset} />;
   return (
-    <div className="font-sans antialiased bg-floral-pattern min-h-screen">
+    <div className="font-sans antialiased bg-white min-h-screen">
+      {/* Corner decorations */}
+      <div className="corner-tl" />
       <div className="corner-tr" />
       <div className="corner-bl" />
+      <div className="corner-br" />
+      
       {step > 1 && step < 6 && <ProgressSteps currentStep={step} />}
       {step === 1 && <PhotoUpload order={order} setOrder={setOrder} onNext={() => setStep(2)} />}
       {step === 2 && <StyleSelection order={order} setOrder={setOrder} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
