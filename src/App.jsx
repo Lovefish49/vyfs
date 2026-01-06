@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.PROD ? '' : 'http://localhost:3001';
 
 const PRICING = {
   styles: { chibi: 0, ghibli: 15, popmart: 20, realistic: 10 },
-  cases: { 'cube-small': 89, 'cube-large': 129, 'shadow-box': 149, 'premium': 169 },
+  cases: { black: 89, gold: 129, terrazzo: 149, led: 169 },
   addons: { dateEngraving: 25, spotifyCode: 15, miniRose: 12, ribbon: 8, messageCard: 5, bellCollar: 6 },
   exchangeRate: 24500,
 };
@@ -17,10 +17,10 @@ const STYLE_INFO = {
 };
 
 const CASE_INFO = {
-  'cube-small': { name: 'Acrylic Cube (S)', desc: '15×15×20cm', emoji: '🔲' },
-  'cube-large': { name: 'Acrylic Cube (L)', desc: '20×20×25cm', emoji: '⬜' },
-  'shadow-box': { name: 'Shadow Box', desc: 'Wall-mountable', emoji: '🖼️' },
-  'premium': { name: 'Premium Gift Box', desc: 'Black base + ribbon', emoji: '🎁' },
+  black: { name: 'Classic Black', desc: 'Elegant black base', image: '/cases/black.jpg' },
+  gold: { name: 'Luxury Gold', desc: 'Premium gold accents', image: '/cases/gold.jpg' },
+  terrazzo: { name: 'Terrazzo Wood', desc: 'Artisan crafted base', image: '/cases/terrazzo.jpg' },
+  led: { name: 'LED Illuminated', desc: 'Warm ambient lighting', image: '/cases/led.jpg' },
 };
 
 const ADDON_INFO = {
@@ -72,93 +72,71 @@ const generateSculpturePreview = async (userPhoto, style, retries = 2) => {
   throw lastError;
 };
 
-const CaseOverlay = ({ caseType, children }) => {
-  const cases = {
-    'cube-small': (
-      <svg viewBox="0 0 200 240" className="absolute inset-0 w-full h-full pointer-events-none">
-        <defs>
-          <linearGradient id="glass-top" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="white" stopOpacity="0.4"/><stop offset="100%" stopColor="white" stopOpacity="0.1"/></linearGradient>
-          <linearGradient id="glass-side" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="white" stopOpacity="0.2"/><stop offset="50%" stopColor="white" stopOpacity="0.05"/><stop offset="100%" stopColor="white" stopOpacity="0.15"/></linearGradient>
-          <linearGradient id="base-gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#e5e5e5"/><stop offset="100%" stopColor="#d4d4d4"/></linearGradient>
-        </defs>
-        <rect x="15" y="10" width="170" height="200" rx="4" fill="none" stroke="#d4d4d4" strokeWidth="2"/>
-        <rect x="15" y="10" width="170" height="30" rx="4" fill="url(#glass-top)"/>
-        <rect x="15" y="10" width="20" height="200" fill="url(#glass-side)"/>
-        <rect x="10" y="210" width="180" height="20" rx="3" fill="url(#base-gradient)"/>
-      </svg>
-    ),
-    'cube-large': (
-      <svg viewBox="0 0 200 240" className="absolute inset-0 w-full h-full pointer-events-none">
-        <defs>
-          <linearGradient id="glass-top-lg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="white" stopOpacity="0.5"/><stop offset="100%" stopColor="white" stopOpacity="0.1"/></linearGradient>
-          <linearGradient id="base-lg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#d4d4d4"/><stop offset="100%" stopColor="#a3a3a3"/></linearGradient>
-        </defs>
-        <rect x="10" y="5" width="180" height="205" rx="4" fill="none" stroke="#a3a3a3" strokeWidth="3"/>
-        <rect x="10" y="5" width="180" height="35" rx="4" fill="url(#glass-top-lg)"/>
-        <rect x="5" y="210" width="190" height="25" rx="4" fill="url(#base-lg)"/>
-      </svg>
-    ),
-    'shadow-box': (
-      <svg viewBox="0 0 200 240" className="absolute inset-0 w-full h-full pointer-events-none">
-        <defs><linearGradient id="wood-frame" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#44403c"/><stop offset="50%" stopColor="#292524"/><stop offset="100%" stopColor="#1c1917"/></linearGradient></defs>
-        <rect x="5" y="5" width="190" height="230" rx="2" fill="url(#wood-frame)"/>
-        <rect x="20" y="20" width="160" height="200" rx="1" fill="#1c1917"/>
-        <rect x="20" y="20" width="160" height="200" rx="1" fill="none" stroke="#0a0a0a" strokeWidth="3"/>
-      </svg>
-    ),
-    'premium': (
-      <svg viewBox="0 0 200 240" className="absolute inset-0 w-full h-full pointer-events-none">
-        <defs>
-          <linearGradient id="premium-box" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stopColor="#292524"/><stop offset="100%" stopColor="#1c1917"/></linearGradient>
-          <linearGradient id="gold-accent" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stopColor="#b45309"/><stop offset="50%" stopColor="#d97706"/><stop offset="100%" stopColor="#b45309"/></linearGradient>
-        </defs>
-        <rect x="10" y="10" width="180" height="210" rx="6" fill="url(#premium-box)"/>
-        <rect x="10" y="10" width="180" height="210" rx="6" fill="none" stroke="#44403c" strokeWidth="2"/>
-        <rect x="10" y="220" width="180" height="12" rx="2" fill="url(#gold-accent)"/>
-      </svg>
-    ),
-  };
-  return <div className="relative w-full h-full">{children}{cases[caseType]}</div>;
-};
-
 const AddonOverlays = ({ addons, engravingDate }) => (
   <>
-    {addons.bellCollar && <div className="absolute bottom-[25%] left-1/2 -translate-x-1/2 z-20 animate-bounce" style={{ animationDuration: '2s' }}><span className="text-xl drop-shadow-md">🔔</span></div>}
-    {addons.miniRose && <div className="absolute bottom-[15%] right-[15%] z-20"><span className="text-2xl drop-shadow-md">🌹</span></div>}
-    {addons.spotifyCode && <div className="absolute bottom-[12%] left-[12%] z-20"><div className="bg-black/80 rounded-full px-2 py-1 flex items-center gap-1.5 shadow-lg"><span className="text-green-400 text-sm">♪</span><div className="flex gap-0.5 items-end h-3">{[4,7,3,8,5,9,4,6].map((h, i) => <div key={i} className="w-0.5 bg-green-400 rounded-full" style={{ height: `${h}px` }} />)}</div></div></div>}
-    {addons.dateEngraving && <div className="absolute top-[12%] right-[12%] z-20"><div className="bg-white/95 rounded shadow-lg px-2 py-1 text-center border border-stone-200"><div className="text-rose-500 text-xs font-bold">❤</div><div className="text-stone-700 text-xs font-medium">{engravingDate ? new Date(engravingDate).getDate() : '14'}</div><div className="text-stone-400 text-[8px]">{engravingDate ? new Date(engravingDate).toLocaleString('default', { month: 'short' }) : 'FEB'}</div></div></div>}
+    {addons.bellCollar && <div className="absolute bottom-[30%] left-1/2 -translate-x-1/2 z-20 animate-bounce" style={{ animationDuration: '2s' }}><span className="text-xl drop-shadow-md">🔔</span></div>}
+    {addons.miniRose && <div className="absolute bottom-[20%] right-[20%] z-20"><span className="text-2xl drop-shadow-md">🌹</span></div>}
+    {addons.spotifyCode && <div className="absolute bottom-[15%] left-[15%] z-20"><div className="bg-black/80 rounded-full px-2 py-1 flex items-center gap-1.5 shadow-lg"><span className="text-green-400 text-sm">♪</span><div className="flex gap-0.5 items-end h-3">{[4,7,3,8,5,9,4,6].map((h, i) => <div key={i} className="w-0.5 bg-green-400 rounded-full" style={{ height: `${h}px` }} />)}</div></div></div>}
+    {addons.dateEngraving && <div className="absolute top-[15%] right-[15%] z-20"><div className="bg-white/95 rounded shadow-lg px-2 py-1 text-center border border-stone-200"><div className="text-rose-500 text-xs font-bold">❤</div><div className="text-stone-700 text-xs font-medium">{engravingDate ? new Date(engravingDate).getDate() : '14'}</div><div className="text-stone-400 text-[8px]">{engravingDate ? new Date(engravingDate).toLocaleString('default', { month: 'short' }) : 'FEB'}</div></div></div>}
     {addons.ribbon && <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-30"><span className="text-3xl drop-shadow-lg">🎀</span></div>}
   </>
 );
 
 const ProductPreview = ({ userPhoto, generatedSculpture, style, caseType, addons, isGenerating, engravingDate, error }) => {
+  const currentCase = CASE_INFO[caseType] || CASE_INFO.black;
+  
   const FallbackPreview = () => (
-    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-rose-50 to-stone-50 rounded-lg">
-      {userPhoto ? <img src={userPhoto} alt="Your photo" className="w-3/4 h-3/4 object-contain rounded-lg opacity-50" style={{ filter: 'sepia(0.3) saturate(0.8)' }} /> : <div className="text-center text-stone-400"><span className="text-4xl">🌸</span><p className="text-xs mt-2">Upload a photo</p></div>}
+    <div className="w-full h-full flex items-center justify-center">
+      {userPhoto ? (
+        <img src={userPhoto} alt="Your photo" className="w-3/4 h-3/4 object-contain rounded-lg opacity-60" style={{ filter: 'sepia(0.3) saturate(0.8)' }} />
+      ) : (
+        <div className="text-center text-stone-400">
+          <span className="text-4xl">🌸</span>
+          <p className="text-xs mt-2">Upload a photo</p>
+        </div>
+      )}
     </div>
   );
+
   return (
-    <div className="relative w-56 h-72 mx-auto">
-      <CaseOverlay caseType={caseType || 'cube-small'}>
-        <div className="absolute inset-[12%] bottom-[18%] overflow-hidden rounded">
-          {isGenerating ? (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-rose-50 to-stone-50">
-              <div className="w-10 h-10 border-rose-200 border-t-rose-500 rounded-full animate-spin mb-3" style={{ borderWidth: '3px', borderStyle: 'solid' }} />
-              <p className="text-xs text-stone-500">Creating sculpture...</p>
-              <p className="text-[10px] text-stone-400 mt-1">~10-15 seconds</p>
-            </div>
-          ) : error ? (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-stone-50 p-4">
-              <span className="text-2xl mb-2">⚠️</span>
-              <p className="text-xs text-amber-700 text-center">{error}</p>
-            </div>
-          ) : generatedSculpture ? (
-            <img src={generatedSculpture} alt="Generated sculpture" className="w-full h-full object-contain" />
-          ) : <FallbackPreview />}
-        </div>
-      </CaseOverlay>
+    <div className="relative w-64 h-80 mx-auto">
+      {/* Layer 1: Background for sculpture */}
+      <div className="absolute inset-0 flex items-center justify-center p-8 pb-16">
+        {isGenerating ? (
+          <div className="w-full h-full flex flex-col items-center justify-center">
+            <div className="w-12 h-12 border-4 border-rose-200 border-t-rose-500 rounded-full animate-spin mb-3" />
+            <p className="text-sm text-stone-500">Creating sculpture...</p>
+            <p className="text-xs text-stone-400 mt-1">~10-15 seconds</p>
+          </div>
+        ) : error ? (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4">
+            <span className="text-3xl mb-2">⚠️</span>
+            <p className="text-sm text-amber-700 text-center">{error}</p>
+          </div>
+        ) : generatedSculpture ? (
+          <img src={generatedSculpture} alt="Generated sculpture" className="max-w-full max-h-full object-contain" />
+        ) : (
+          <FallbackPreview />
+        )}
+      </div>
+      
+      {/* Layer 2: Case overlay with blend mode */}
+      <img 
+        src={currentCase.image} 
+        alt={currentCase.name}
+        className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+        style={{ mixBlendMode: 'screen' }}
+      />
+      
+      {/* Layer 3: Add-ons */}
       <AddonOverlays addons={addons} engravingDate={engravingDate} />
-      {style && <div className="absolute -top-2 -left-2 bg-white rounded-full px-2 py-1 shadow-md border border-stone-100 z-40"><span className="text-xs">{STYLE_INFO[style].emoji} {STYLE_INFO[style].name}</span></div>}
+      
+      {/* Style badge */}
+      {style && (
+        <div className="absolute -top-2 -left-2 bg-white rounded-full px-2 py-1 shadow-md border border-stone-100 z-40">
+          <span className="text-xs">{STYLE_INFO[style].emoji} {STYLE_INFO[style].name}</span>
+        </div>
+      )}
     </div>
   );
 };
@@ -250,7 +228,7 @@ const StyleSelection = ({ order, setOrder, generatedImages, setGeneratedImages, 
         <h2 className="text-xl text-stone-800 mb-1 text-center" style={{ fontFamily: 'Georgia, serif' }}>Choose Style</h2>
         <p className="text-stone-400 text-sm mb-4 text-center">AI will preview your sculpture</p>
         <div className="mb-4">
-          <ProductPreview userPhoto={order.referencePhoto} generatedSculpture={order.style ? generatedImages[order.style] : null} style={order.style} caseType={order.caseType || 'cube-small'} addons={order.addons} isGenerating={isGenerating} error={error} />
+          <ProductPreview userPhoto={order.referencePhoto} generatedSculpture={order.style ? generatedImages[order.style] : null} style={order.style} caseType={order.caseType || 'black'} addons={order.addons} isGenerating={isGenerating} error={error} />
           {order.style && (generatedImages[order.style] || error) && !isGenerating && <button onClick={handleRegenerate} className="mx-auto mt-2 flex items-center gap-1 text-xs text-stone-500 hover:text-rose-500 bg-white px-3 py-1.5 rounded-full shadow-sm">🔄 {error ? 'Retry' : 'Regenerate'}</button>}
         </div>
         <div className="grid grid-cols-2 gap-2">
@@ -273,15 +251,16 @@ const CaseSelection = ({ order, setOrder, generatedImages, onNext, onBack }) => 
   <div className="min-h-screen bg-gradient-to-b from-rose-50/30 to-white px-4 py-4 pb-28">
     <div className="max-w-md mx-auto">
       <button onClick={onBack} className="flex items-center gap-1 text-stone-500 hover:text-stone-700 mb-4 text-sm">← Back</button>
-      <div className="mb-4"><ProductPreview userPhoto={order.referencePhoto} generatedSculpture={generatedImages[order.style]} style={order.style} caseType={order.caseType || 'cube-small'} addons={order.addons} isGenerating={false} /></div>
+      <div className="mb-4"><ProductPreview userPhoto={order.referencePhoto} generatedSculpture={generatedImages[order.style]} style={order.style} caseType={order.caseType || 'black'} addons={order.addons} isGenerating={false} /></div>
       <h2 className="text-xl text-stone-800 mb-1 text-center" style={{ fontFamily: 'Georgia, serif' }}>Select Case</h2>
       <p className="text-stone-400 text-sm mb-4 text-center">Tap to preview each case</p>
-      <div className="space-y-2">
+      <div className="grid grid-cols-2 gap-3">
         {Object.entries(CASE_INFO).map(([key, info]) => (
-          <button key={key} onClick={() => setOrder(prev => ({ ...prev, caseType: key }))} className={`w-full p-3 rounded-xl border-2 text-left flex items-center gap-3 transition-all ${order.caseType === key ? 'border-rose-400 bg-rose-50 shadow-md' : 'border-stone-200 bg-white hover:border-rose-200'}`}>
-            <div className="text-2xl">{info.emoji}</div>
-            <div className="flex-1"><div className="font-medium text-stone-800 text-sm">{info.name}</div><div className="text-xs text-stone-500">{info.desc}</div></div>
-            <div className="text-stone-800 font-semibold">${PRICING.cases[key]}</div>
+          <button key={key} onClick={() => setOrder(prev => ({ ...prev, caseType: key }))} className={`p-2 rounded-xl border-2 text-left transition-all ${order.caseType === key ? 'border-rose-400 bg-rose-50 shadow-md' : 'border-stone-200 bg-white hover:border-rose-200'}`}>
+            <img src={info.image} alt={info.name} className="w-full h-24 object-contain rounded-lg mb-2" />
+            <div className="font-medium text-stone-800 text-sm">{info.name}</div>
+            <div className="text-xs text-stone-500">{info.desc}</div>
+            <div className="text-sm text-rose-500 font-semibold mt-1">${PRICING.cases[key]}</div>
           </button>
         ))}
       </div>
