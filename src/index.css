@@ -15,12 +15,18 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('https://thumbs.dreamstime.com/b/peony-flower-seamless-pattern-drawing-vector-hand-drawn-engrave-engraved-floral-background-botanical-rose-leaves-berry-112816558.jpg');
-  background-size: 400px;
+  background-image: url('https://i.ibb.co/v40B4ZmZ/bg4.jpg');
+  background-size: 500px;
   background-repeat: repeat;
-  opacity: 0.06;
+  opacity: 0.15;
   pointer-events: none;
   z-index: 0;
+}
+
+/* Ensure content stays above background */
+.bg-floral-pattern > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Animations */
