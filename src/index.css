@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Subtle floral pattern background */
+.bg-floral-pattern {
+  background-color: #ffffff;
+  position: relative;
+}
+
+.bg-floral-pattern::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('https://thumbs.dreamstime.com/b/peony-flower-seamless-pattern-drawing-vector-hand-drawn-engrave-engraved-floral-background-botanical-rose-leaves-berry-112816558.jpg');
+  background-size: 400px;
+  background-repeat: repeat;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Animations */
 @keyframes float {
   0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
   10% { opacity: 0.2; }
@@ -23,25 +45,3 @@
 .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
 .animate-slideUp { animation: slideUp 0.6s ease-out forwards; }
 .animate-spin-slow { animation: spin 2s linear infinite; }
-
-/* Subtle floral pattern background */
-.bg-floral {
-  background-color: #fefefe;
-  background-image: 
-    radial-gradient(ellipse at 20% 30%, rgba(255, 182, 193, 0.15) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(230, 190, 255, 0.12) 0%, transparent 45%),
-    radial-gradient(ellipse at 60% 80%, rgba(255, 218, 233, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse at 10% 70%, rgba(200, 220, 255, 0.1) 0%, transparent 40%);
-}
-
-/* Soft mesh gradient */
-.bg-mesh {
-  background-color: #fff;
-  background-image:
-    radial-gradient(at 40% 20%, hsla(340, 80%, 94%, 0.8) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, hsla(280, 60%, 96%, 0.6) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(350, 70%, 96%, 0.5) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, hsla(320, 50%, 97%, 0.4) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(20, 60%, 96%, 0.5) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, hsla(280, 40%, 97%, 0.4) 0px, transparent 50%);
-}
