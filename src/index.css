@@ -2,61 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Corner flower decorations - no repeat, just corners */
-.corner-tl {
+/* Floral frame background - single image wrapping the screen */
+.bg-floral-frame {
+  position: relative;
+  background-color: #ffffff;
+}
+
+.bg-floral-frame::before {
+  content: '';
   position: fixed;
   top: 0;
   left: 0;
-  width: 200px;
-  height: 200px;
-  background: url('https://i.ibb.co/v40B4ZmZ/bg4.jpg') no-repeat;
-  background-size: cover;
-  background-position: bottom right;
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.corner-tr {
-  position: fixed;
-  top: 0;
   right: 0;
-  width: 200px;
-  height: 200px;
-  background: url('https://i.ibb.co/v40B4ZmZ/bg4.jpg') no-repeat;
+  bottom: 0;
+  background-image: url('https://i.ibb.co/v40B4ZmZ/bg4.jpg');
   background-size: cover;
-  background-position: bottom left;
-  opacity: 0.25;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.35;
   pointer-events: none;
   z-index: 0;
 }
 
-.corner-bl {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 200px;
-  height: 200px;
-  background: url('https://i.ibb.co/v40B4ZmZ/bg4.jpg') no-repeat;
-  background-size: cover;
-  background-position: top right;
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.corner-br {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 200px;
-  height: 200px;
-  background: url('https://i.ibb.co/v40B4ZmZ/bg4.jpg') no-repeat;
-  background-size: cover;
-  background-position: top left;
-  opacity: 0.25;
-  pointer-events: none;
-  z-index: 0;
+/* Content stays above */
+.bg-floral-frame > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* Animations */
@@ -68,11 +39,6 @@
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
 }
 
 .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
