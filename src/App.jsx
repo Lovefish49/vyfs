@@ -779,70 +779,27 @@ const Checkout = ({ order, generatedImages, currency, setCurrency, onComplete, o
 };
 
 const Confirmation = ({ order, onReset }) => (
-  <div className="min-h-screen bg-gradient-to-b from-white via-green-50/30 to-pink-50/30 px-6 py-12">
+  <div className="min-h-screen bg-gradient-to-b from-rose-50 to-white px-4 py-10">
     <div className="max-w-md mx-auto text-center">
-      <div className="w-24 h-24 mx-auto bg-gradient-to-br from-green-400 to-emerald-400 rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-green-200/50 animate-bounce" style={{ animationDuration: '2s' }}>
-        <span className="text-4xl">✓</span>
+      <div className="w-16 h-16 mx-auto bg-green-100 rounded-full flex items-center justify-center mb-4"><span className="text-2xl">✓</span></div>
+      <h1 className="text-xl text-stone-800 mb-1" style={{ fontFamily: 'Georgia, serif' }}>Thank You!</h1>
+      <p className="text-stone-500 text-sm mb-6">Order received</p>
+      <div className="bg-white rounded-xl p-5 shadow-sm mb-6 text-left">
+        <div className="text-center mb-4"><p className="text-xs text-stone-500">Reference</p><p className="text-2xl font-mono font-bold text-rose-600">{order.id}</p></div>
+        <div className="border-t border-stone-100 pt-3 space-y-1.5 text-sm">
+          <div className="flex justify-between"><span className="text-stone-500">Style</span><span>{STYLE_INFO[order.style]?.name}</span></div>
+          <div className="flex justify-between"><span className="text-stone-500">Case</span><span>{CASE_INFO[order.caseType]?.name}</span></div>
+          <div className="flex justify-between font-semibold"><span>Total</span><span className="text-rose-600">{formatPrice(order.totalPrice, order.currency)}</span></div>
+        </div>
       </div>
-      
-      <h1 className="text-3xl font-light text-gray-800 mb-2">Thank You!</h1>
-      <p className="text-gray-500 mb-8">Your order has been received</p>
-      
-      <GlassCard className="p-6 mb-6 text-left" hover={false}>
-        <div className="text-center mb-6">
-          <p className="text-xs text-gray-400 uppercase tracking-widest mb-2">Order Reference</p>
-          <p className="text-3xl font-mono font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">{order.id}</p>
-        </div>
-        <div className="border-t border-pink-100 pt-4 space-y-3 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-500">Style</span>
-            <span>{STYLE_INFO[order.style]?.name}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Case</span>
-            <span>{CASE_INFO[order.caseType]?.name}</span>
-          </div>
-          <div className="flex justify-between font-semibold text-lg pt-2 border-t border-pink-100">
-            <span>Total</span>
-            <span className="text-pink-500">{formatPrice(order.totalPrice, order.currency)}</span>
-          </div>
-        </div>
-      </GlassCard>
-
-      <GlassCard className="p-4 mb-8" hover={false}>
-        <p className="text-sm text-gray-600">
-          📱 We'll contact you at <strong>{order.customerContact.phone}</strong> within 24 hours
-        </p>
-      </GlassCard>
-
-      <Button onClick={onReset} variant="secondary" className="w-full">
-        Create Another Order
-      </Button>
+      <div className="bg-rose-50 rounded-lg p-3 mb-6 text-sm text-stone-600">📱 We'll contact you at <strong>{order.customerContact.phone}</strong> within 24 hours</div>
+      <button onClick={onReset} className="w-full py-3 rounded-xl font-medium border-2 border-rose-200 text-rose-600 hover:bg-rose-50">Create Another Order</button>
     </div>
   </div>
 );
 
-const initialOrder = { 
-  referencePhoto: null, 
-  style: null, 
-  caseType: null, 
-  addons: { dateEngraving: false, spotifyCode: false, miniRose: false, ribbon: false, messageCard: false, bellCollar: false }, 
-  message: '', 
-  engravingDate: '' 
-};
+const initialOrder = { referencePhoto: null, style: null, caseType: null, addons: { dateEngraving: false, spotifyCode: false, miniRose: false, ribbon: false, messageCard: false, bellCollar: false }, message: '', engravingDate: '' };
 
-export default function App() {
-  const [step, setStep] = useState(1);
-  const [order, setOrder] = useState(initialOrder);
-  const [currency, setCurrency] = useState('VND');
-  const [completedOrder, setCompletedOrder] = useState(null);
-  const [generatedImages, setGeneratedImages] = useState({});
-  
-  const handleComplete = (final) => { setCompletedOrder(final); setStep(6); };
-  const handleReset = () => { setOrder(initialOrder); setCompletedOrder(null); setGeneratedImages({}); setStep(1); };
-  
-  if (step === 6 && completedOrder) return <Confirmation order={completedOrder} onReset={handleReset} />;
-  
 export default function App() {
   const [step, setStep] = useState(1);
   const [order, setOrder] = useState(initialOrder);
@@ -854,10 +811,8 @@ export default function App() {
   if (step === 6 && completedOrder) return <Confirmation order={completedOrder} onReset={handleReset} />;
   return (
     <div className="font-sans antialiased bg-floral-pattern min-h-screen">
-      {/* Corner decorations */}
       <div className="corner-tr" />
       <div className="corner-bl" />
-      
       {step > 1 && step < 6 && <ProgressSteps currentStep={step} />}
       {step === 1 && <PhotoUpload order={order} setOrder={setOrder} onNext={() => setStep(2)} />}
       {step === 2 && <StyleSelection order={order} setOrder={setOrder} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
