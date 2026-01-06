@@ -284,7 +284,7 @@ const PhotoUpload = ({ order, setOrder, onNext }) => {
   }, [setOrder]);
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-purple-50/30 relative overflow-hidden">
+    <div className="min-h-screen px-4 py-8">
       <FloatingPetals />
       
       <div className="relative z-10 px-6 py-12 max-w-md mx-auto">
@@ -810,14 +810,16 @@ export default function App() {
   const handleReset = () => { setOrder(initialOrder); setCompletedOrder(null); setGeneratedImages({}); setStep(1); };
   if (step === 6 && completedOrder) return <Confirmation order={completedOrder} onReset={handleReset} />;
   return (
-    <div className="font-sans antialiased bg-floral-frame min-h-screen">
-      {step > 1 && step < 6 && <ProgressSteps currentStep={step} />}
-      {step === 1 && <PhotoUpload order={order} setOrder={setOrder} onNext={() => setStep(2)} />}
-      {step === 2 && <StyleSelection order={order} setOrder={setOrder} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-      {step === 3 && <CaseSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
-      {step === 4 && <AddonsSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(5)} onBack={() => setStep(3)} />}
-      {step === 5 && <Checkout order={order} generatedImages={generatedImages} currency={currency} setCurrency={setCurrency} onComplete={handleComplete} onBack={() => setStep(4)} />}
-      {step >= 2 && step <= 4 && <PriceBar order={order} currency={currency} setCurrency={setCurrency} />}
+    <div className="font-sans antialiased bg-floral-frame min-h-screen relative">
+      <div className="relative z-10">
+        {step > 1 && step < 6 && <ProgressSteps currentStep={step} />}
+        {step === 1 && <PhotoUpload order={order} setOrder={setOrder} onNext={() => setStep(2)} />}
+        {step === 2 && <StyleSelection order={order} setOrder={setOrder} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
+        {step === 3 && <CaseSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
+        {step === 4 && <AddonsSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(5)} onBack={() => setStep(3)} />}
+        {step === 5 && <Checkout order={order} generatedImages={generatedImages} currency={currency} setCurrency={setCurrency} onComplete={handleComplete} onBack={() => setStep(4)} />}
+        {step >= 2 && step <= 4 && <PriceBar order={order} currency={currency} setCurrency={setCurrency} />}
+      </div>
     </div>
   );
 }
