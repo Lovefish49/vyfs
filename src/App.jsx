@@ -182,7 +182,7 @@ const PhotoUpload = ({ order, setOrder, onNext }) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-stone-50 px-4 py-8">
       <div className="max-w-md mx-auto">
-        <div className="text-center mb-8"><div className="text-4xl mb-3">🌸</div><h1 className="text-2xl text-stone-800 mb-1" style={{ fontFamily: 'Georgia, serif' }}>Fleur de Charm</h1><p className="text-stone-400 text-sm">Preserved flower sculptures of your loved ones</p></div>
+        <div className="text-center mb-8"><div className="text-4xl mb-3">🌸</div><h1 className="text-2xl text-stone-800 mb-1" style={{ fontFamily: 'Georgia, serif' }}>Ivy Florisity</h1><p className="text-stone-400 text-sm">Preserved flower sculptures of your loved ones</p></div>
         <div onClick={() => document.getElementById('photo-input')?.click()} className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all ${order.referencePhoto ? 'border-rose-300 bg-rose-50/50' : 'border-stone-300 hover:border-rose-300 hover:bg-rose-50/30'}`}>
           <input id="photo-input" type="file" accept="image/*" className="hidden" onChange={(e) => handleFile(e.target.files?.[0])} />
           {order.referencePhoto ? <div><img src={order.referencePhoto} alt="Uploaded" className="max-h-48 mx-auto rounded-xl shadow-md object-contain" /><p className="text-xs text-stone-400 mt-3">Tap to change</p></div> : <div className="py-6"><div className="w-14 h-14 mx-auto bg-rose-100 rounded-full flex items-center justify-center mb-3"><span className="text-2xl">📷</span></div><p className="text-stone-600 font-medium">Upload a photo</p><p className="text-xs text-stone-400 mt-1">Your pet, partner, or cherished memory</p></div>}
@@ -336,7 +336,7 @@ const Checkout = ({ order, generatedImages, currency, setCurrency, onComplete, o
           <div className="bg-rose-50 rounded-lg p-3 text-sm space-y-1.5 mb-3">
             <div className="flex justify-between"><span className="text-stone-500">Bank</span><span className="font-medium">Vietcombank</span></div>
             <div className="flex justify-between"><span className="text-stone-500">Account</span><span className="font-mono">1234567890</span></div>
-            <div className="flex justify-between"><span className="text-stone-500">Name</span><span>FLEUR DE CHARM</span></div>
+            <div className="flex justify-between"><span className="text-stone-500">Name</span><span>Ivy Florisity</span></div>
             <div className="flex justify-between"><span className="text-stone-500">Amount</span><span className="font-semibold text-rose-600">{formatPrice(total, currency)}</span></div>
           </div>
           <label className="block w-full p-3 border-2 border-dashed border-stone-300 rounded-lg text-center cursor-pointer hover:border-rose-300">
