@@ -843,15 +843,28 @@ export default function App() {
   
   if (step === 6 && completedOrder) return <Confirmation order={completedOrder} onReset={handleReset} />;
   
-return (
-  <div className="font-sans antialiased bg-floral-pattern min-h-screen">
-    {step > 1 && step < 6 && <ProgressSteps currentStep={step} />}
-    {step === 1 && <PhotoUpload order={order} setOrder={setOrder} onNext={() => setStep(2)} />}
-    {step === 2 && <StyleSelection order={order} setOrder={setOrder} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-    {step === 3 && <CaseSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
-    {step === 4 && <AddonsSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(5)} onBack={() => setStep(3)} />}
-    {step === 5 && <Checkout order={order} generatedImages={generatedImages} currency={currency} setCurrency={setCurrency} onComplete={handleComplete} onBack={() => setStep(4)} />}
-    {step >= 2 && step <= 4 && <PriceBar order={order} currency={currency} setCurrency={setCurrency} />}
-  </div>
+export default function App() {
+  const [step, setStep] = useState(1);
+  const [order, setOrder] = useState(initialOrder);
+  const [currency, setCurrency] = useState('VND');
+  const [completedOrder, setCompletedOrder] = useState(null);
+  const [generatedImages, setGeneratedImages] = useState({});
+  const handleComplete = (final) => { setCompletedOrder(final); setStep(6); };
+  const handleReset = () => { setOrder(initialOrder); setCompletedOrder(null); setGeneratedImages({}); setStep(1); };
+  if (step === 6 && completedOrder) return <Confirmation order={completedOrder} onReset={handleReset} />;
+  return (
+    <div className="font-sans antialiased bg-floral-pattern min-h-screen">
+      {/* Corner decorations */}
+      <div className="corner-tr" />
+      <div className="corner-bl" />
+      
+      {step > 1 && step < 6 && <ProgressSteps currentStep={step} />}
+      {step === 1 && <PhotoUpload order={order} setOrder={setOrder} onNext={() => setStep(2)} />}
+      {step === 2 && <StyleSelection order={order} setOrder={setOrder} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
+      {step === 3 && <CaseSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
+      {step === 4 && <AddonsSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(5)} onBack={() => setStep(3)} />}
+      {step === 5 && <Checkout order={order} generatedImages={generatedImages} currency={currency} setCurrency={setCurrency} onComplete={handleComplete} onBack={() => setStep(4)} />}
+      {step >= 2 && step <= 4 && <PriceBar order={order} currency={currency} setCurrency={setCurrency} />}
+    </div>
   );
-};
+}
