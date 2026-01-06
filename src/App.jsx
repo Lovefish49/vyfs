@@ -843,8 +843,9 @@ export default function App() {
   
   if (step === 6 && completedOrder) return <Confirmation order={completedOrder} onReset={handleReset} />;
   
-  return (
-    <div className="font-sans antialiased min-h-screen">
+   return (
+    <div className="font-sans antialiased bg-floral-pattern min-h-screen">
+      {step > 1 && step < 6 && <ProgressSteps currentStep={step} />}
       {step === 1 && <PhotoUpload order={order} setOrder={setOrder} onNext={() => setStep(2)} />}
       {step === 2 && <StyleSelection order={order} setOrder={setOrder} generatedImages={generatedImages} setGeneratedImages={setGeneratedImages} onNext={() => setStep(3)} onBack={() => setStep(1)} />}
       {step === 3 && <CaseSelection order={order} setOrder={setOrder} generatedImages={generatedImages} onNext={() => setStep(4)} onBack={() => setStep(2)} />}
