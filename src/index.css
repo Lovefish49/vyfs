@@ -2,12 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Floral frame background - single image wrapping the screen */
-.bg-floral-frame {
-  position: relative;
-  background-color: #ffffff;
-}
-
+/* Floral frame background */
 .bg-floral-frame::before {
   content: '';
   position: fixed;
@@ -19,15 +14,9 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.35;
+  opacity: 0.75;
   pointer-events: none;
   z-index: 0;
-}
-
-/* Content stays above */
-.bg-floral-frame > * {
-  position: relative;
-  z-index: 1;
 }
 
 /* Animations */
@@ -41,5 +30,17 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
 .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
 .animate-slideUp { animation: slideUp 0.6s ease-out forwards; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
