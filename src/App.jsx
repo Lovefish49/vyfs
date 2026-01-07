@@ -126,6 +126,76 @@ const ProductPreview = ({ userPhoto, generatedSculpture, style, caseType, addons
       );
     }
     if (generatedSculpture) {
+      return (
+        <div className="w-full h-full flex items-center justify-center">
+          <img 
+            src={generatedSculpture} 
+            alt="Generated sculpture" 
+            className="max-w-[85%] max-h-[85%] object-contain"
+            style={{ 
+              filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.3))',
+            }}
+          />
+        </div>
+      );
+    }
+    return userPhoto ? (
+      <img src={userPhoto} alt="Your photo" className="w-3/4 h-3/4 object-contain rounded-lg opacity-50" style={{ filter: 'sepia(0.3) saturate(0.8)' }} />
+    ) : (
+      <div className="text-center text-stone-400">
+        <span className="text-4xl">🌸</span>
+        <p className="text-xs mt-2">Upload a photo</p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="relative w-64 h-80 mx-auto">
+      {/* Layer 1: Sculpture content on black background */}
+      <div className="absolute inset-0 bg-black flex items-center justify-center overflow-hidden rounded-t-lg">
+        <ContentLayer />
+      </div>
+
+      {/* Layer 2: Case image overlay with screen blend mode */}
+      <img
+        src={currentCase.image}
+        alt={currentCase.name}
+        className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+        style={{ mixBlendMode: 'screen' }}
+      />
+
+      {/* Layer 3: Add-ons on top */}
+      <AddonOverlays addons={addons} engravingDate={engravingDate} />
+
+      {/* Style badge */}
+      {style && (
+        <div className="absolute -top-2 -left-2 bg-white rounded-full px-2 py-1 shadow-md border border-stone-100 z-40">
+          <span className="text-xs">{STYLE_INFO[style].emoji} {STYLE_INFO[style].name}</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+  const ContentLayer = () => {
+    if (isGenerating) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center">
+          <div className="w-10 h-10 border-rose-200 border-t-rose-500 rounded-full animate-spin mb-3" style={{ borderWidth: '3px', borderStyle: 'solid' }} />
+          <p className="text-xs text-stone-300">Creating sculpture...</p>
+          <p className="text-[10px] text-stone-400 mt-1">~10-15 seconds</p>
+        </div>
+      );
+    }
+    if (error) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center p-4">
+          <span className="text-2xl mb-2">⚠️</span>
+          <p className="text-xs text-amber-400 text-center">{error}</p>
+        </div>
+      );
+    }
+    if (generatedSculpture) {
       return <img src={generatedSculpture} alt="Generated sculpture" className="w-full h-full object-contain" />;
     }
     return userPhoto ? (
