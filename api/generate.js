@@ -53,7 +53,7 @@ ${STYLE_PROMPTS[style]}
 CRITICAL REQUIREMENTS:
 1. Made entirely of soft pastel flower petals (pink, cream, lavender, blush)
 2. Maintain recognizable features/identity from the photo
-3. Subject must be MEDIUM - fill 70% of the frameD BLACK background (#000000) - NOTHING ELSE
+3. Subject must be MEDIUM - fill 60% of the frameD BLACK background (#000000) - NOTHING ELSE
 6. NO white areas, NO gradients, NO shadows, NO floor, NO reflections
 7. NO display case, NO decorations, NO text, NO watermarks
 8. Square 1:1 composition
