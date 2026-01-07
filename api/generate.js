@@ -1,35 +1,10 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const STYLE_PROMPTS = {
-  chibi: `CHIBI STYLE:
-- Super deformed: massive head (50% of total height), tiny body
-- Huge sparkling eyes with highlights, small nose, tiny mouth
-- Short stubby limbs, rounded pudgy body
-- Kawaii aesthetic with rosy cheek blush marks
-- Cute, childlike proportions`,
-
-  ghibli: `STUDIO GHIBLI STYLE:
-- Soft watercolor painted look
-- Gentle, dreamy, nostalgic atmosphere  
-- Natural but slightly stylized proportions
-- Warm, serene expression
-- Miyazaki / Totoro aesthetic
-- Organic flowing shapes`,
-
-  popmart: `POP MART VINYL TOY STYLE:
-- Smooth matte plastic finish
-- Oversized head, minimal features
-- Tiny dot eyes, no nose, simple or no mouth
-- Bold solid colors, flat shading
-- Designer art toy / Bearbrick / Molly aesthetic
-- Clean geometric shapes`,
-
-  realistic: `PHOTOREALISTIC STYLE:
-- True-to-life proportions
-- Detailed accurate likeness from photo
-- Natural features and expression
-- High detail, museum quality
-- Lifelike depth and texture`
+  chibi: 'CHIBI style with super-deformed cute proportions - oversized head (40% of body), huge round eyes, tiny stubby limbs, kawaii aesthetic',
+  ghibli: 'STUDIO GHIBLI style - soft, dreamy, whimsical Miyazaki-inspired aesthetic with gentle warm tones',
+  popmart: 'POP MART style - designer vinyl toy look with oversized head, minimal facial features, smooth rounded shapes',
+  realistic: 'REALISTIC style - true-to-life proportions and accurate likeness matching the original photo'
 };
 
 export default async function handler(req, res) {
@@ -46,20 +21,34 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing userPhoto or invalid style' });
   }
 
-  const prompt = `Create a preserved flower sculpture based on this photo.
+  const prompt = `Create a PRESERVED HYDRANGEA FLOWER SCULPTURE based on this photo.
 
+CONSTRUCTION (CRITICAL):
+- Made ENTIRELY of small preserved hydrangea flower petals clustered together
+- Fluffy, textured surface from hundreds of tiny flower petals
+- Like a teddy bear made of real dried flowers - soft, organic, tactile
+- Each petal is visible, creating rich texture
+- NOT smooth plastic, NOT cartoon render - real preserved flowers
+
+FLOWER COLORS:
+- Soft natural tones: cream, blush pink, dusty rose, lavender, tan, brown
+- Colors should match the subject's natural coloring where possible
+- Subtle color gradients across the sculpture
+
+STYLE TRANSFORMATION:
 ${STYLE_PROMPTS[style]}
 
-CRITICAL REQUIREMENTS:
-1. Made entirely of soft pastel flower petals (pink, cream, lavender, blush)
-2. Maintain recognizable features/identity from the photo
-3. Subject must be MEDIUM - fill 60% of the frameD BLACK background (#000000) - NOTHING ELSE
-6. NO white areas, NO gradients, NO shadows, NO floor, NO reflections
-7. NO display case, NO decorations, NO text, NO watermarks
-8. Square 1:1 composition
-9. The sculpture floats on pure black void
+DETAILS:
+- Small black bead eyes
+- Recognizable features from the original photo
+- Sitting/standing pose, front-facing
+- Subject fills 70% of frame, centered
 
-OUTPUT: Only the flower sculpture on absolute black background. No other elements.`;
+BACKGROUND:
+- Pure solid black (#000000)
+- NO other elements, NO floor, NO shadows
+
+Output: A flower petal sculpture on pure black background.`;
 
   try {
     const response = await fetch(
