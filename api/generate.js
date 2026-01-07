@@ -1,48 +1,35 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const STYLE_PROMPTS = {
-  chibi: `CHIBI STYLE sculpture:
-- Super deformed proportions: head is 1/2 to 1/3 of total body height
-- Extremely large round eyes with sparkles/highlights
-- Tiny simplified body, short stubby limbs
-- Rounded, pudgy features - no sharp edges
-- Exaggerated cute expressions (blush marks on cheeks)
-- Simplified hands (mitten-like)
-- Kawaii Japanese aesthetic
-- Soft pastel flower petals forming the figure`,
+  chibi: `CHIBI STYLE:
+- Super deformed: massive head (50% of total height), tiny body
+- Huge sparkling eyes with highlights, small nose, tiny mouth
+- Short stubby limbs, rounded pudgy body
+- Kawaii aesthetic with rosy cheek blush marks
+- Cute, childlike proportions`,
 
-  ghibli: `STUDIO GHIBLI STYLE sculpture:
-- Hand-painted watercolor aesthetic
-- Soft, dreamy, nostalgic atmosphere
-- Natural proportions but slightly stylized
-- Gentle rounded features, warm expressions
-- Muted earth tones mixed with soft pastels
-- Delicate linework feeling, organic shapes
-- Hayao Miyazaki / Totoro / Spirited Away aesthetic
-- Whimsical, magical, serene mood
-- Flower petals with painterly, flowing quality`,
+  ghibli: `STUDIO GHIBLI STYLE:
+- Soft watercolor painted look
+- Gentle, dreamy, nostalgic atmosphere  
+- Natural but slightly stylized proportions
+- Warm, serene expression
+- Miyazaki / Totoro aesthetic
+- Organic flowing shapes`,
 
-  popmart: `POP MART / DESIGNER TOY STYLE sculpture:
-- Vinyl collectible toy aesthetic
-- Smooth, matte, plastic-like surface finish
-- Bold graphic style with clean lines
-- Oversized head with minimal facial features
-- Small dot eyes, no nose, simple mouth or no mouth
-- Uniform solid colors, flat shading
-- Contemporary art toy / urban vinyl look
-- Bearbrick / Molly / Labubu inspired
-- Glossy or matte toy-like flower petals`,
+  popmart: `POP MART VINYL TOY STYLE:
+- Smooth matte plastic finish
+- Oversized head, minimal features
+- Tiny dot eyes, no nose, simple or no mouth
+- Bold solid colors, flat shading
+- Designer art toy / Bearbrick / Molly aesthetic
+- Clean geometric shapes`,
 
-  realistic: `REALISTIC STYLE sculpture:
-- True-to-life proportions and anatomy
-- Detailed facial features matching the photo
-- Natural skin texture represented in petals
-- Accurate likeness preservation
-- Photorealistic rendering quality
-- Lifelike eyes with depth and reflection
-- Natural pose and expression from photo
-- High detail flower petal arrangement
-- Museum-quality preserved flower sculpture look`
+  realistic: `PHOTOREALISTIC STYLE:
+- True-to-life proportions
+- Detailed accurate likeness from photo
+- Natural features and expression
+- High detail, museum quality
+- Lifelike depth and texture`
 };
 
 export default async function handler(req, res) {
@@ -50,37 +37,31 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  if (!GEMINI_API_KEY) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!GEMINI_API_KEY) return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
 
   const { userPhoto, style } = req.body;
   if (!userPhoto || !style || !STYLE_PROMPTS[style]) {
     return res.status(400).json({ error: 'Missing userPhoto or invalid style' });
   }
 
-  const prompt = `Transform this photo into a preserved hydrangea flower sculpture.
+  const prompt = `Create a preserved flower sculpture based on this photo.
 
 ${STYLE_PROMPTS[style]}
 
-REQUIREMENTS:
-- Soft pastel pink, cream, lavender, and blush flower petals form the subject
-- Maintain recognizable identity/features of the subject in the photo
-- Subject centered, facing forward
-- PURE BLACK background (#000000) - absolutely nothing else
-- NO display case, NO decorations, NO shadows, NO gradients
-- Square composition, subject fills 70% of frame
-- The sculpture should look like it's made entirely of delicate preserved flowers
+CRITICAL REQUIREMENTS:
+1. Made entirely of soft pastel flower petals (pink, cream, lavender, blush)
+2. Maintain recognizable features/identity from the photo
+3. Subject must be LARGE - fill 85% of the frame
+4. Centered, front-facing pose
+5. PURE SOLID BLACK background (#000000) - NOTHING ELSE
+6. NO white areas, NO gradients, NO shadows, NO floor, NO reflections
+7. NO display case, NO decorations, NO text, NO watermarks
+8. Square 1:1 composition
+9. The sculpture floats on pure black void
 
-Output ONLY the flower sculpture on pure black background.`;
+OUTPUT: Only the flower sculpture on absolute black background. No other elements.`;
 
   try {
     const response = await fetch(
