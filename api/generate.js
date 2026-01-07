@@ -1,10 +1,48 @@
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 const STYLE_PROMPTS = {
-  chibi: 'chibi style, cute exaggerated proportions, big head small body, kawaii aesthetic',
-  ghibli: 'Studio Ghibli style, soft whimsical aesthetic, gentle warm colors, dreamy',
-  popmart: 'Pop Mart vinyl toy style, smooth matte surfaces, designer art toy aesthetic',
-  realistic: 'realistic style, lifelike proportions, detailed texture, photorealistic',
+  chibi: `CHIBI STYLE sculpture:
+- Super deformed proportions: head is 1/2 to 1/3 of total body height
+- Extremely large round eyes with sparkles/highlights
+- Tiny simplified body, short stubby limbs
+- Rounded, pudgy features - no sharp edges
+- Exaggerated cute expressions (blush marks on cheeks)
+- Simplified hands (mitten-like)
+- Kawaii Japanese aesthetic
+- Soft pastel flower petals forming the figure`,
+
+  ghibli: `STUDIO GHIBLI STYLE sculpture:
+- Hand-painted watercolor aesthetic
+- Soft, dreamy, nostalgic atmosphere
+- Natural proportions but slightly stylized
+- Gentle rounded features, warm expressions
+- Muted earth tones mixed with soft pastels
+- Delicate linework feeling, organic shapes
+- Hayao Miyazaki / Totoro / Spirited Away aesthetic
+- Whimsical, magical, serene mood
+- Flower petals with painterly, flowing quality`,
+
+  popmart: `POP MART / DESIGNER TOY STYLE sculpture:
+- Vinyl collectible toy aesthetic
+- Smooth, matte, plastic-like surface finish
+- Bold graphic style with clean lines
+- Oversized head with minimal facial features
+- Small dot eyes, no nose, simple mouth or no mouth
+- Uniform solid colors, flat shading
+- Contemporary art toy / urban vinyl look
+- Bearbrick / Molly / Labubu inspired
+- Glossy or matte toy-like flower petals`,
+
+  realistic: `REALISTIC STYLE sculpture:
+- True-to-life proportions and anatomy
+- Detailed facial features matching the photo
+- Natural skin texture represented in petals
+- Accurate likeness preservation
+- Photorealistic rendering quality
+- Lifelike eyes with depth and reflection
+- Natural pose and expression from photo
+- High detail flower petal arrangement
+- Museum-quality preserved flower sculpture look`
 };
 
 export default async function handler(req, res) {
@@ -30,15 +68,19 @@ export default async function handler(req, res) {
   }
 
   const prompt = `Transform this photo into a preserved hydrangea flower sculpture.
-Style: ${STYLE_PROMPTS[style]}
-Requirements:
-- Soft pastel pink, cream, and lavender flower petals form the subject's silhouette
-- Maintain recognizable features of the subject
+
+${STYLE_PROMPTS[style]}
+
+REQUIREMENTS:
+- Soft pastel pink, cream, lavender, and blush flower petals form the subject
+- Maintain recognizable identity/features of the subject in the photo
 - Subject centered, facing forward
-- PURE BLACK background (#000000) - NO case, NO decorations, NO gradients
+- PURE BLACK background (#000000) - absolutely nothing else
+- NO display case, NO decorations, NO shadows, NO gradients
 - Square composition, subject fills 70% of frame
-- The background MUST be solid black, nothing else
-Output only the sculpture on pure black background.`;
+- The sculpture should look like it's made entirely of delicate preserved flowers
+
+Output ONLY the flower sculpture on pure black background.`;
 
   try {
     const response = await fetch(
